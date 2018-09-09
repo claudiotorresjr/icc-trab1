@@ -1,17 +1,24 @@
-#ifndef __SISLINEAR_H__
-#define __SISLINEAR_H__
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
 
 // Parâmetros para teste de convergência
-#define MAXIT 500
 #define EPS 1.0e-4
 
-// Método de Jacobi
-double  jacobi (double  *A, double *B,  double *X,  int n,
-		double *tIteracao, double *tTotal);
 
-// Método de Gauss-Seidel
-double  gaussSeidel (double  *A, double *B,  double *X,  int n,
-		     double *tIteracao, double *tTotal);
+typedef struct parametro{
+	long long int n, //dimensao
+				  k, //n de diagonais
+		          i; //max de iteracao
+	double p, //pré-condicionador
+		   e; //erro aproximado
+	char *o;
+}parametro;
 
-#endif // __SISLINEAR_H__
-
+void multMatMat(double *pri, double *sec, long int tam, double *mult);
+void multMatVet(double *pri, double *sec, long int tam, double *mult);
+double multVetVet(double *pri, double *sec, long int tam);
+void trasformaSistema(double *A, double *B, long int tam);
+void transposta(double *A, double *T, long int tam);
+void preCondicionador(double p, double *M, double *A, long int tam);
+int gradienteConjugado(double *A, double *B, parametro par);

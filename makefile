@@ -1,10 +1,11 @@
     CC     = gcc -std=c11 -g
     CFLAGS = 
-    LFLAGS =
+    LFLAGS = -lm
 
       PROG = cgSolver
       OBJS = utils.o \
              sistemarandom.o \
+             gradienteconjugado.o \
              $(PROG).o
 
 .PHONY: limpa faxina clean distclean purge all

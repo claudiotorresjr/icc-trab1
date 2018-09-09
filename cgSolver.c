@@ -8,15 +8,7 @@
 #include <getopt.h> // *GNU* Para o getopt_long()
 
 #include "sistemarandom.h"
-
-typedef struct parametro{
-	long long int n, //dimensao
-				  k, //n de diagonais
-		          i; //max de iteracao
-	double p, //pré-condicionador
-		   e; //erro aproximado
-	char *o;
-}parametro;
+#include "gradienteconjugado.h"
 
 void ajuda(){
 	printf("Argumentos passados incorretos. Deve ser no formato:\n");
@@ -30,12 +22,12 @@ void ajuda(){
 	printf("\tω=1.0 pré-condicionador de Gauss-Seidel\n");
 	printf("\t1.0 < ω < 2.0: pré-condicionador SSOR\n");
 	printf("<i> = obrigatorio. maximo de iteracoes\n");
-	printf("<ε> = opcional. erro aproximado absoluto\n");
+	printf("<ε> = opciomal. erro aproximado absoluto\n");
 	printf("<arquivo_saida> = obrigatorio. caminho completo para o arquivo que vai conter a solução.\n");
 	exit(0);
 }
 
-int opcoes(int argc, char *argv[], parametro *par){
+void opcoes(int argc, char *argv[], parametro *par){
 	int opt;
 
 	while((opt = getopt(argc, argv, "n:k:p:i:e:o:")) != -1){
@@ -101,29 +93,26 @@ int opcoes(int argc, char *argv[], parametro *par){
 				break;
 		}
 	}  
-	return 1; 
 }
 
 int main (int argc, char *argv[])
 {
-	double *A, *B;
-	int sair = 0;
+	double *A, *B, *X;
+	long int i, j;
 	parametro par;
 	srand(20182);
 
 	if(argc != 13 && argc != 12){
 		ajuda();
 	}
-	while(sair != 1){
-		sair = opcoes(argc, argv, &par);
-	}
-	//printf("%lld, %lld, %lf, %lld, %lf, %s\n", par.n, par.k, par.p, par.i, par.e, par.o);
+	
+	opcoes(argc, argv, &par);
 
 	A = (double*)malloc(par.n*par.n*sizeof(double));
 	B = (double*)malloc(par.n*sizeof(double));
 
-	for(long long int i = 0; i < par.n; i++){
-		for(long long int j = 0; j < par.n; j++){
+	for(i = 0; i < par.n; i++){
+		for(j = 0; j < par.n; j++){
 			if(abs(i - j) > par.k/2){
 				A[i*par.n + j] = 0;
 			}else{
@@ -132,16 +121,30 @@ int main (int argc, char *argv[])
 		}
 	}
 
-	for(long long int i = 0; i < par.n; i++){
+	for(i = 0; i < par.n; i++){
 		B[i] = generateRandomB(par.k);
 	}
 
-	for(long long int i = 0; i < par.n; i++){
-		for(long long int j = 0; j < par.n; j++){
-			printf("%lf ", A[i*par.n + j]);
+	/*for(i = 0; i < par.n; i++){
+		for(j = 0; j < par.n; j++){
+			printf("%2lf ", A[i*par.n + j]);
 		}
-		printf("= %lf", B[i]);
+		printf("= %2lf", B[i]);
 		printf("\n");
-	}
+	}*/
+
+	trasformaSistema(A, B, par.n);
+
+	gradienteConjugado(A, B, par);
+
+
+	/*printf("\n");
+	for(i = 0; i < par.n; i++){
+		for(j = 0; j < par.n; j++){
+			printf("%2lf ", A[i*par.n + j]);
+		}
+		printf("= %2lf", B[i]);
+		printf("\n");
+	}*/
 }
 

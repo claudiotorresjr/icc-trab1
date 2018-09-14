@@ -13,6 +13,7 @@ typedef struct parametro{
 	double p, //pré-condicionador
 		   e; //erro aproximado
 	char *o;
+	int op; //nos diz se o erro eh opcional
 }parametro;
 
 void multMatMat(double *pri, double *sec, long int tam, double *mult);
@@ -22,3 +23,5 @@ void trasformaSistema(double *A, double *B, long int tam);
 void transposta(double *A, double *T, long int tam);
 void preCondicionador(double p, double *M, double *A, long int tam);
 int gradienteConjugado(double *A, double *B, parametro par);
+void criaMatrizes(double *A, double *L, double *U, double *D, long int tam);
+double maxVetor(double *V, long int tam);

@@ -22,9 +22,9 @@ void ajuda(){
 	printf("\tω=1.0 pré-condicionador de Gauss-Seidel\n");
 	printf("\t1.0 < ω < 2.0: pré-condicionador SSOR\n");
 	printf("<i> = obrigatorio. maximo de iteracoes\n");
-	printf("<ε> = opciomal. erro aproximado absoluto\n");
+	printf("<ε> = opcional. erro aproximado absoluto\n");
 	printf("<arquivo_saida> = obrigatorio. caminho completo para o arquivo que vai conter a solução.\n");
-	exit(0);
+	exit(-1);
 }
 
 void opcoes(int argc, char *argv[], parametro *par){
@@ -36,59 +36,66 @@ void opcoes(int argc, char *argv[], parametro *par){
 				if(isdigit(*argv[optind - 1]))
 					par->n = atoi(optarg);
 				else{
-					printf("-n precisa de um parametro numerico.\n");
-					exit(0);
+					fprintf(stderr, "-n precisa de um parametro numerico.\n");
+					exit(-1);
 				}
 				if(par->n <= 10){
-					printf("n precisa ser > 10.\n");
-					exit(0);
+					fprintf(stderr, "n precisa ser > 10.\n");
+					exit(-1);
 				}
 				break;
 			case 'k':
 				if(isdigit(*argv[optind - 1]))
 					par->k = atoi(optarg);
 				else{
-					printf("-k precisa de um valor associado numerico.\n");
-					exit(0);
+					fprintf(stderr, "-k precisa de um valor associado numerico.\n");
+					exit(-1);
 				}
 				if( (par->k > par->n) || (par->k <= 1) || ((par->k % 2) == 0) ){
-					printf("k deve ser menor que n, ser > 1 e impar.\n");
-					exit(0);
+					fprintf(stderr, "k deve ser menor que n, ser > 1 e impar.\n");
+					exit(-1);
 				}
 				break;
 			case 'p':
 				if(isdigit(*argv[optind - 1]))
 					par->p = atof(optarg);
 				else{
-					printf("-p precisa de um valor associado numerico.\n");
-					exit(0);
+					fprintf(stderr, "-p precisa de um valor associado numerico.\n");
+					exit(-1);
 				}
 				if(par->p >= 0.0 && par->p > 2.0){
-					printf("p precisa estar: 0 <= p <= 2.\n");
-					exit(0);
+					fprintf(stderr, "p precisa estar: 0 <= p <= 2.\n");
+					exit(-1);
 				}
 				break;
 			case 'i':
 				if(isdigit(*argv[optind - 1]))
 					par->i = atoi(optarg);
 				else{
-					printf("-i precisa de um valor associado numerico.\n");
-					exit(0);
+					fprintf(stderr, "-i precisa de um valor associado numerico.\n");
+					exit(-1);
 				}
 				break;
 			case 'e':
 				if(strcmp(optarg, "-o") == 0){
-					par->e = 0.0;
+					par->e = 0.00001;
+					par->op = 1;
 					par->o = argv[optind];
 				}
-				else
+				else{
 					par->e = atof(optarg);
+					par->op = 0;
+					if (par->e <= 0.0){
+						fprintf(stderr, "-o precisa de um valor positivo.\n");
+						exit(-1);
+					}
+				}
 				break;
 			case 'o':
 				par->o = optarg;
 				break;
 			case '?':
-				printf("----Parametro passado incorreto----\n");
+				fprintf(stderr, "----Parametro passado incorreto----\n");
 				ajuda();
 				break;
 		}

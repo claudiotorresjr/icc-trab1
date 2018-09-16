@@ -1,12 +1,11 @@
 
 /**
  * @file gradienteconjugado.h
- * @author GRR201720176143 Cláudio Torres Júnior
+ * @author GRR20176143 Cláudio Torres Júnior
  * @author GRR20171607 Gabriela Stein
  * @date 16 Sep 2018
  * @brief Arquivo de header para as funções e definições de tipo.
  */
-
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -20,6 +19,9 @@
 
 #define EPS 1.0e-4
 
+/**
+* @brief Estrutura que contêm todos os parâmetros passados na execução do programa
+*/
 
 typedef struct parametro{
 	long int n, //dimensao
@@ -30,6 +32,10 @@ typedef struct parametro{
 	char *o;
 	int op; //nos diz se o erro eh opcional
 }parametro;
+
+/**
+* @brief Estrutura que contêm o tempo inicial, final e a diferença entre os diagonais
+*/
 
 typedef struct tempo{
 	double ini;

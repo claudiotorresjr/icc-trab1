@@ -10,6 +10,14 @@
 #include "gradienteconjugado.h"
 #include "utils.h"
 
+/**
+ * @brief Função que transforma um sistema em um sistema 
+ * @param pri Primeiro parametro: Matriz
+ * @param sec Segundo parametro: Matriz
+ * @param mult Resultado da multiplicação
+ * @param tam Ordem da Matriz
+*/
+
 void multMatMat(double *pri, double *sec, long int tam, double *mult){
 	long int i, j, k;
 	double soma = 0.0;
@@ -24,6 +32,14 @@ void multMatMat(double *pri, double *sec, long int tam, double *mult){
 		}
 	}
 }
+
+/**
+ * @brief Função que transforma um sistema em um sistema 
+ * @param pri Primeiro parametro: Matriz
+ * @param sec Segundo parametro: Vetor
+ * @param mult Resultado da multiplicação
+ * @param tam Ordem da Matriz
+*/
 
 void multMatVet(double *pri, double *sec, long int tam, double *mult){
 	long int i, j, k;
@@ -40,6 +56,13 @@ void multMatVet(double *pri, double *sec, long int tam, double *mult){
 	}
 }
 
+/**
+ * @brief Função que transforma um sistema em um sistema 
+ * @param pri Primeiro parametro: Vetor
+ * @param sec Segundo parametro: Vetor
+ * @param tam Ordem da Matriz
+*/
+
 double multVetVet(double *pri, double *sec, long int tam){
 	long int i, j;
 	double soma = 0.0;
@@ -49,6 +72,13 @@ double multVetVet(double *pri, double *sec, long int tam){
 	}
 	return soma;
 }
+
+/**
+ * @brief Função que transforma um sistema em um sistema 
+ * @param A matriz original
+ * @param B vetor de termos independentes
+ * @param tam Ordem da Matriz
+*/
 
 void trasformaSistema(double *A, double *B, long int tam){
 	double *T = (double*)malloc(tam*tam*sizeof(double));
@@ -71,6 +101,13 @@ void trasformaSistema(double *A, double *B, long int tam){
 	free(multv);
 }
 
+/**
+ * @brief Função que calcula a transposta de uma matriz
+ * @param A matriz original
+ * @param T matriz transposta
+ * @param tam Ordem da Matriz
+*/
+
 void transposta(double *A, double *T, long int tam){
 	long int i, j;
 
@@ -81,7 +118,13 @@ void transposta(double *A, double *T, long int tam){
 	}
 }
 
-
+/**
+ * @brief Função que condiciona uma matriz
+ * @param A matriz original
+ * @param M matriz resultante do uso do pré condicionador
+ * @param p Indica o pré-condicionador a ser utilizado
+ * @param tam Ordem da Matriz
+*/
 
 void preCondicionador(double p, double *M, double *A, long int tam){
 	long int i, j;
@@ -191,8 +234,9 @@ void imprime_dados(double *erroIt, double *X, double norma, double pc, double it
 	fprintf(arqOut, "# Tempo iter: <%lf>\n", it); //# Tempo iter: <tempo para resolver uma iteração do método>
 	fprintf(arqOut, "# Tempo residuo: <%lf>\n#\n%ld\n", r, par.n); //# Tempo residuo: <tempo para calcular o residuo do SL> 
 	for(long int i = 0; i < par.n; i++){
-		fprintf(arqOut, "%lf ", X[i]); //x_1 x_12 ... x_n
+		fprintf(arqOut, "%.15g ", X[i]); //x_1 x_12 ... x_n
 	}
+	fprintf(arqOut, "\n");
 } 
 
 /**
@@ -434,8 +478,6 @@ int gradienteConjugado(double *A, double *B, parametro par){
 			/*for(i = 0; i < par.n; i++)
 				printf("%lf ", X[i]);
 			printf("\n ");*/
-			printf("%d ", it);
-			printf("\n ");
 			if (par.op == 0){ //se falso, para as iterações
 				liberaVet(M, X, Xant, r, v, z, y, T, erroAproximadoR , erroAproximadoA, erroIt);
 				return 0;

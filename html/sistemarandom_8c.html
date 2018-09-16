@@ -104,8 +104,10 @@ Gráfico de dependência de inclusões para sistemarandom.c:</div>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Funções</h2></td></tr>
 <tr class="memitem:a8e9f730a5d82d5ec45aaf3ec90622bbc"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sistemarandom_8c.html#a8e9f730a5d82d5ec45aaf3ec90622bbc">generateRandomA</a> (unsigned int i, unsigned int j, unsigned int k)</td></tr>
+<tr class="memdesc:a8e9f730a5d82d5ec45aaf3ec90622bbc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Função que gera os coeficientes de um sistema linear k-diagonal.  <a href="#a8e9f730a5d82d5ec45aaf3ec90622bbc">Mais...</a><br /></td></tr>
 <tr class="separator:a8e9f730a5d82d5ec45aaf3ec90622bbc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af6765c3e4a0fdb2aa8cbc8d88599b76b"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sistemarandom_8c.html#af6765c3e4a0fdb2aa8cbc8d88599b76b">generateRandomB</a> (unsigned int k)</td></tr>
+<tr class="memdesc:af6765c3e4a0fdb2aa8cbc8d88599b76b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Função que gera os termos independentes de um sistema linear k-diagonal.  <a href="#af6765c3e4a0fdb2aa8cbc8d88599b76b">Mais...</a><br /></td></tr>
 <tr class="separator:af6765c3e4a0fdb2aa8cbc8d88599b76b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Descrição Detalhada</h2>
@@ -155,7 +157,17 @@ GRR20171607 Gabriela Stein </dd></dl>
 </table>
 </div><div class="memdoc">
 
-<p>Definição na linha <a class="el" href="sistemarandom_8c_source.html#l00018">18</a> do arquivo <a class="el" href="sistemarandom_8c_source.html">sistemarandom.c</a>.</p>
+<p>Função que gera os coeficientes de um sistema linear k-diagonal. </p>
+<dl class="params"><dt>Parâmetros</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">i</td><td>coordenadas do elemento a ser calculado (0&lt;=i,j&lt;n) </td></tr>
+    <tr><td class="paramname">j</td><td>coordenadas do elemento a ser calculado (0&lt;=i,j&lt;n) </td></tr>
+    <tr><td class="paramname">k</td><td>numero de diagonais da matriz A </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definição na linha <a class="el" href="sistemarandom_8c_source.html#l00020">20</a> do arquivo <a class="el" href="sistemarandom_8c_source.html">sistemarandom.c</a>.</p>
 
 </div>
 </div>
@@ -181,7 +193,15 @@ GRR20171607 Gabriela Stein </dd></dl>
 </table>
 </div><div class="memdoc">
 
-<p>Definição na linha <a class="el" href="sistemarandom_8c_source.html#l00028">28</a> do arquivo <a class="el" href="sistemarandom_8c_source.html">sistemarandom.c</a>.</p>
+<p>Função que gera os termos independentes de um sistema linear k-diagonal. </p>
+<dl class="params"><dt>Parâmetros</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">k</td><td>numero de diagonais da matriz A </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definição na linha <a class="el" href="sistemarandom_8c_source.html#l00031">31</a> do arquivo <a class="el" href="sistemarandom_8c_source.html">sistemarandom.c</a>.</p>
 
 </div>
 </div>

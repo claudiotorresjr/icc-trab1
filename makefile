@@ -1,3 +1,7 @@
+# GRR20176143 Cláudio Torres Júnior
+# GRR20171607 Gabriela Stein
+# -----------------------------------------------------------------------------
+
     CC     = gcc -std=c11 -g
     CFLAGS = 
     LFLAGS = -lm -Wall

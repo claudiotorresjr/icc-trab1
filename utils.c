@@ -1,3 +1,12 @@
+
+/**
+ * @file utils.c
+ * @author GRR20176143 Cláudio Torres Júnior
+ * @author GRR20171607 Gabriela Stein
+ * @date 16 Sep 2018
+ * @brief Arquivo de implementação da função para medição do tempo.
+ */
+
 #include "utils.h"
 
 // Retorna tempo em milisegundos

@@ -1,3 +1,29 @@
+
+/*! \mainpage Primeiro Trabalho de Introdução à Computação Científica 2018/2
+ *
+ * \section introducao Introdução
+ *		O objetivo deste trabalho é implementar um programa computacional
+ *		para testar a eficiência do método dos Gradientes Conjugados com
+ *		diferentes pré-condicionadores para a resolução de sistemas esparsos
+ *		nos quais a matriz A é k-diagonal.
+ *
+ * \subsection autores Autores
+ * 		GRR20176143 Claúdio Torres Júnior  \n
+ *		GRR20171607 Gabriela Stein
+ *
+ * \subsection professor Professor
+ * 		Daniel Weingaertner
+ * 
+ */
+
+/**
+ * @file cgSolver.c
+ * @author GRR20176143 Cláudio Torres Júnior
+ * @author GRR20171607 Gabriela Stein
+ * @date 16 Sep 2018
+ * @brief Arquivo do programa principal.
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -9,6 +35,10 @@
 
 #include "sistemarandom.h"
 #include "gradienteconjugado.h"
+
+/**
+ * @brief Função para explicar os parametros usados pelo programa, finaliza a execução.
+*/
 
 void ajuda(){
 	printf("Argumentos passados incorretos. Deve ser no formato:\n");
@@ -26,6 +56,13 @@ void ajuda(){
 	printf("<arquivo_saida> = obrigatorio. caminho completo para o arquivo que vai conter a solução.\n");
 	exit(-1);
 }
+
+/**
+ * @brief Função para ler os parametros do programa
+ * @param argc Contagem dos parâmetros
+ * @param argv Vetor de strings contendo os parâmetros
+ * @param par Struct usada para atribuição dos parâmetros
+*/
 
 void opcoes(int argc, char *argv[], parametro *par){
 	int opt;
@@ -102,6 +139,13 @@ void opcoes(int argc, char *argv[], parametro *par){
 	}  
 }
 
+/**
+ * @brief Função principal do programa
+ * @param argc Contagem dos parâmetros
+ * @param argv Vetor de strings contendo os parâmetros
+ * @return Retorna 0 caso tenha concluído com êxito.
+*/
+
 int main (int argc, char *argv[])
 {
 	double *A, *B;
@@ -154,5 +198,7 @@ int main (int argc, char *argv[])
 	}*/
 	free(A);
 	free(B);
+
+	return(0);
 }
 

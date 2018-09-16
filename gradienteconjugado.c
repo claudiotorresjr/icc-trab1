@@ -1,3 +1,12 @@
+
+/**
+ * @file gradienteconjugado.c
+ * @author GRR20176143 Cláudio Torres Júnior
+ * @author GRR20171607 Gabriela Stein
+ * @date 16 Sep 2018
+ * @brief Arquivo de implementação das principais funções.
+ */
+
 #include "gradienteconjugado.h"
 #include "utils.h"
 
@@ -72,6 +81,8 @@ void transposta(double *A, double *T, long int tam){
 	}
 }
 
+
+
 void preCondicionador(double p, double *M, double *A, long int tam){
 	long int i, j;
 	double *L = (double*)malloc(tam*tam*sizeof(double)); //matriz lower
@@ -131,6 +142,13 @@ void preCondicionador(double p, double *M, double *A, long int tam){
 	free(R2);
 }
 
+/**
+ * @brief Função que encontra o maior valor de um vetor
+ * @param V Vetor qualquer
+ * @param tam Ordem da Matriz
+ * @return Retorna o maior valor
+*/
+
 double maxVetor(double *V, long int tam)
 {
 	double maximo = V[0];
@@ -141,6 +159,18 @@ double maxVetor(double *V, long int tam)
 	}
 	return maximo;
 }
+
+/**
+ * @brief Função que imprime a saída de dados
+ * @param erroIT Vetor que contem o erro em todas iterações
+ * @param X Vetor solução
+ * @param norma Norma do resíduo
+ * @param pc Tempo para cálculo do pré-condicionador
+ * @param it Tempo para resolver uma iteração
+ * @param r Tempo usado para calcular o residuo do SL
+ * @param par Struct contendo os parametros passados na execução do programa
+ * @param iter Quantidade de iterações usadas pelo método
+*/
 
 void imprime_dados(double *erroIt, double *X, double norma, double pc, double it, double r, parametro par, long int iter)
 {	
@@ -164,6 +194,12 @@ void imprime_dados(double *erroIt, double *X, double norma, double pc, double it
 		fprintf(arqOut, "%lf ", X[i]); //x_1 x_12 ... x_n
 	}
 } 
+
+/**
+ * @brief Função que calcula a Fatoração Incompleta de Cholesky
+ * @param M Matriz condionada usando Gauss Seidel ou SSOR
+ * @param tam Ordem da Matriz
+*/
 
 void Cholesky(double *M, long int tam)
 {	
@@ -190,6 +226,15 @@ void Cholesky(double *M, long int tam)
 		}
 	}	
 }
+
+/**
+ * @brief Função que aloca e atribui as matrizes criadas para os pré condionantes Gauss Seidel e SSOR
+ * @param A Matriz original
+ * @param L Matriz inferior (lower)
+ * @param U Matriz superior (upper)
+ * @param D Matriz diagonal
+ * @param tam Ordem da Matriz
+*/
 
 void criaMatrizes(double *A, double *L, double *U, double *D, long int tam)
 {
@@ -226,6 +271,16 @@ void criaMatrizes(double *A, double *L, double *U, double *D, long int tam)
 		}
 }
 
+/**
+ * @brief Função que libera os vetores criados durante a execução do programa
+ * @param M Matriz condicionada
+ * @param X Vetor solução
+ * @param Xant Vetor solução da iteração anterior
+ * @param r Resíduo
+ * @param v M^(-1)*B
+ * @param z Resultado para a matriz verdadeira * vetor resposta de M
+*/
+
 void liberaVet(double *M, double *X, double *Xant, double *r, double *v, double *z, 
 	double *y, double *T, double *erroAproximadoR , double *erroAproximadoA, double *erroIt){
 
@@ -241,6 +296,13 @@ void liberaVet(double *M, double *X, double *Xant, double *r, double *v, double 
 	free(erroAproximadoA);
 	free(erroIt);
 }
+
+/**
+ * @brief Função que calcula a solução do sistema linear pelo método do Gradiente Conjugado
+ * @param A Matriz condicionada
+ * @param b Vetor solução
+ * @param par Struct contendo os parametros passados durante a chamada do programa
+*/
 
 int gradienteConjugado(double *A, double *B, parametro par){
 	int convergiu = 0;
@@ -346,7 +408,7 @@ int gradienteConjugado(double *A, double *B, parametro par){
 		}
 
 		//aux1 = r^t * r
-		aux1 = multVetVet(r, r, par.n);
+		//aux1 = multVetVet(r, r, par.n);
 
 		//erro aproximado absoluto
 		for(i = 0; i < par.n; i++){

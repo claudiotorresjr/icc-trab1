@@ -1,8 +1,23 @@
+
+/**
+ * @file gradienteconjugado.h
+ * @author GRR201720176143 Cláudio Torres Júnior
+ * @author GRR20171607 Gabriela Stein
+ * @date 16 Sep 2018
+ * @brief Arquivo de header para as funções e definições de tipo.
+ */
+
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 
 // Parâmetros para teste de convergência
+
+/**
+* @brief Valor de epsilon para teste de convergência
+*/
+
 #define EPS 1.0e-4
 
 

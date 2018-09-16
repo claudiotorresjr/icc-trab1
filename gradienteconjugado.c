@@ -152,14 +152,14 @@ void imprime_dados(double *erroIt, double *X, double norma, double pc, double it
 	}
 
 	fprintf(arqOut, "# ctj17 Cláudio Torres Júnior\n"); //# login1 Nome1
-	fprintf(arqOut, "# ctj17 Cláudio Torres Júnior\n#\n"); //# login2 Nome2
+	fprintf(arqOut, "# gs17 Gabriela Stein\n#\n"); //# login2 Nome2
 	for(long int i = 1; i <= iter; i++){
 		fprintf(arqOut, "# iter %ld: <||%lf||>\n", i, erroIt[i]); //# iter k: <||x||>
 	}
 	fprintf(arqOut, "# residuo: <||%lf||>\n", norma); //# residuo: <||r||>
 	fprintf(arqOut, "# Tempo PC: <%lf>\n", pc); //# Tempo PC: <tempo para cálculo do pré-condicionador>
 	fprintf(arqOut, "# Tempo iter: <%lf>\n", it); //# Tempo iter: <tempo para resolver uma iteração do método>
-	fprintf(arqOut, "# Tempo residuo: <%lf>\n#\n%ld", r, par.n); //# Tempo residuo: <tempo para calcular o residuo do SL> 
+	fprintf(arqOut, "# Tempo residuo: <%lf>\n#\n%ld\n", r, par.n); //# Tempo residuo: <tempo para calcular o residuo do SL> 
 	for(long int i = 0; i < par.n; i++){
 		fprintf(arqOut, "%lf ", X[i]); //x_1 x_12 ... x_n
 	}

@@ -1,4 +1,5 @@
 #include "gradienteconjugado.h"
+#include "utils.h"
 
 void multMatMat(double *pri, double *sec, long int tam, double *mult){
 	long int i, j, k;
@@ -56,6 +57,9 @@ void trasformaSistema(double *A, double *B, long int tam){
 			B[i] = multv[i];
 		}
 	}
+	free(T);
+	free(mult);
+	free(multv);
 }
 
 void transposta(double *A, double *T, long int tam){
@@ -96,33 +100,9 @@ void preCondicionador(double p, double *M, double *A, long int tam){
 				}
 			}
 		}
-	}else if(p == 1.0){//pré-condicionador de Gauss-Seidel
+	}else{//pré-condicionador de Gauss-Seidel p/ x = 1 e pré-condicionador SSOR p/ 1 < x < 2 
 
-		criaMatrizes(A, L, D, U, tam);
-		for(i = 0; i < tam; i++){
-			for(j = 0; j < tam; j++){
-					R1[i*tam + j] = D[i*tam + j] + L[i*tam + j];
-			}
-		}
-		for(i = 0; i < tam; i++){
-			for(j = 0; j < tam; j++){
-					R2[i*tam + j] = D[i*tam + j] + U[i*tam + j];
-			}
-		}
-		for(i = 0; i < tam; i++){
-			for(j = 0; j < tam; j++){
-				if(i == j){
-					D[i*tam + j] = 1/A[i*tam + j];
-				}else{
-					D[i*tam + j] = 0.0;
-				}
-			}
-		}
-		multMatMat(R1, D, tam, U); //matriz U sendo usada como intermediaria da operação
-		multMatMat(U, R2, tam, M);
-
-	}else{//pré-condicionador SSOR
-		criaMatrizes(A, L, D, U, tam);
+		criaMatrizes(A, L, U, D, tam);
 		for(i = 0; i < tam; i++){
 			for(j = 0; j < tam; j++){
 					R1[i*tam + j] = D[i*tam + j] + p*L[i*tam + j];
@@ -136,15 +116,19 @@ void preCondicionador(double p, double *M, double *A, long int tam){
 		for(i = 0; i < tam; i++){
 			for(j = 0; j < tam; j++){
 				if(i == j){
-					D[i*tam + j] = 1/A[i*tam + j];
-				}else{
-					D[i*tam + j] = 0.0;
+					D[i*tam + j] = 1 / D[i*tam + j];
 				}
 			}
 		}
 		multMatMat(R1, D, tam, U); //matriz U sendo usada como intermediaria da operação
 		multMatMat(U, R2, tam, M);
+		Cholesky(M, tam);
 	}
+	free(L);
+	free(U);
+	free(D);
+	free(R1);
+	free(R2);
 }
 
 double maxVetor(double *V, long int tam)
@@ -158,27 +142,53 @@ double maxVetor(double *V, long int tam)
 	return maximo;
 }
 
-/*void imprime_dados()
-{
-	# login1 Nome1
-	# login2 Nome2
-	#
-	# iter 1: <||x||>
-	# iter 2: <||x||>
-	# ...
-	# iter k: <||x||>
-	# residuo: <||r||>
-	# Tempo PC: <tempo para cálculo do pré-condicionador>
-	# Tempo iter: <tempo para resolver uma iteração do método>
-	# Tempo residuo: <tempo para calcular o residuo do SL>
-	#
-	n
-	x_1 x_12 ... x_n
-} */
+void imprime_dados(double *erroIt, double *X, double norma, double pc, double it, double r, parametro par, long int iter)
+{	
+	FILE *arqOut;
+	arqOut = fopen(par.o, "w");
+	if(arqOut == NULL){
+		fprintf(stderr, "erro ao criar arquivo\n");
+		exit(1);
+	}
 
-void Cholesky(double *M, double *a, double *b)
-{
+	fprintf(arqOut, "# ctj17 Cláudio Torres Júnior\n"); //# login1 Nome1
+	fprintf(arqOut, "# ctj17 Cláudio Torres Júnior\n#\n"); //# login2 Nome2
+	for(long int i = 1; i <= iter; i++){
+		fprintf(arqOut, "# iter %ld: <||%lf||>\n", i, erroIt[i]); //# iter k: <||x||>
+	}
+	fprintf(arqOut, "# residuo: <||%lf||>\n", norma); //# residuo: <||r||>
+	fprintf(arqOut, "# Tempo PC: <%lf>\n", pc); //# Tempo PC: <tempo para cálculo do pré-condicionador>
+	fprintf(arqOut, "# Tempo iter: <%lf>\n", it); //# Tempo iter: <tempo para resolver uma iteração do método>
+	fprintf(arqOut, "# Tempo residuo: <%lf>\n#\n%ld", r, par.n); //# Tempo residuo: <tempo para calcular o residuo do SL> 
+	for(long int i = 0; i < par.n; i++){
+		fprintf(arqOut, "%lf ", X[i]); //x_1 x_12 ... x_n
+	}
+} 
+
+void Cholesky(double *M, long int tam)
+{	
+	long int i, j, k;
 	
+	for(k = 0; k < tam; k++){
+		M[k*tam + k] = sqrtf(M[k*tam + k]);
+		for(i = k + 1; i < tam; i++){
+			if(M[i*tam + k] != 0.0){
+				M[i*tam + k] = M[i*tam + k] / M[k*tam + k];
+			}
+		}
+		for(j = k + 1; j < tam; j++){
+			for(i = j; i < tam; i++){
+				if(M[i*tam + j] != 0.0){
+					M[i*tam + j] = M[i*tam + j] - M[i*tam + k]*M[j*tam + k];
+				}
+			}
+		}
+	}
+	for(i = 0; i < tam; i++){
+		for(j = i + 1; j < tam; j++){
+			M[i*tam + j] = 0.0;
+		}
+	}	
 }
 
 void criaMatrizes(double *A, double *L, double *U, double *D, long int tam)
@@ -216,6 +226,22 @@ void criaMatrizes(double *A, double *L, double *U, double *D, long int tam)
 		}
 }
 
+void liberaVet(double *M, double *X, double *Xant, double *r, double *v, double *z, 
+	double *y, double *T, double *erroAproximadoR , double *erroAproximadoA, double *erroIt){
+
+	free(M);
+	free(X);
+	free(Xant);
+	free(r);
+	free(v);
+	free(z);
+	free(y);
+	free(T);
+	free(erroAproximadoR);
+	free(erroAproximadoA);
+	free(erroIt);
+}
+
 int gradienteConjugado(double *A, double *B, parametro par){
 	int convergiu = 0;
 	double *M = (double*)malloc(par.n*par.n*sizeof(double)); //pre-condicionador
@@ -226,13 +252,22 @@ int gradienteConjugado(double *A, double *B, parametro par){
 	double *z = (double*)malloc(par.n*sizeof(double));		
 	double *y = (double*)malloc(par.n*sizeof(double));	
 	double *T = (double*)malloc(par.n*sizeof(double));		//usado para calcular as transpostas
-	double *norma = malloc(par.n*sizeof(double));           //vetor com os erros (usado para tirar o max erro)
+	double *erroAproximadoR = malloc(par.n*sizeof(double));           //vetor com o erro relativo
+	double *erroAproximadoA = malloc(par.n*sizeof(double));	//vetor com o erro absoluto
+	double *erroIt = malloc(par.i*sizeof(double));	//vetor com o erro max absoluto em cada iteraçao
 
-	double s, aux, aux1, m, erroAproximado;
+	double s, aux, aux1, m, norma;
 
 	long int i, j;
 
+	tempo t_pc; //struct para usar o timestamp precodicionador
+	tempo t_it; //struct para usar o timestamp cada iteraçao
+	tempo t_r; //struct para usar o timestamp residuo
+
+	t_pc.ini = timestamp();
 	preCondicionador(par.p, M, A, par.n);
+	t_pc.fim = timestamp();
+	t_pc.dif = t_pc.fim - t_pc.ini;
 
 	//X0 = 0
 	for(i = 0; i < par.n; i++)
@@ -242,22 +277,35 @@ int gradienteConjugado(double *A, double *B, parametro par){
 	for(i = 0; i < par.n; i++)
 		r[i] = B[i];
 
-	//v = M-¹ * B
-	for(i = 0; i < par.n; i++)
-		v[i] = B[i] / M[i*par.n + i];
+	if(par.p < 1){
+		//v = M-¹ * B e y = M-¹ * r pois r == B
+		for(i = 0; i < par.n; i++){
+			v[i] = B[i] / M[i*par.n + i];
+			y[i] = v[i];
+		}
+	}else{
+		double soma = 0.0;
+		v[0] = B[0] / M[0*par.n + 0];
+		y[0] = v[0];
+		for(i = 1; i < par.n; i++){
+			soma = B[i];
+			for(j = i - 1; j >= 0; j--){
+				soma = soma - M[i*par.n + j]*v[j];
+			}
+			v[i] = soma / M[i*par.n + i];
+			y[i] = v[i];
+		}
+	}
 
 
-	//y = M-¹ * r
-	for(i = 0; i < par.n; i++)
-		y[i] = r[i] / M[i*par.n + i];
 
 	//aux = y^t * r
 	aux = multVetVet(y, r, par.n);
 
-	norma[0] = sqrtf(aux); //Norma de b (erro inicial pois X = 0)
-
 	//it == 1 pois a it 0 foi feito fora do for
 	for(int it = 1; it < par.i; it++){
+		t_it.ini = timestamp();
+
 		//z = A*v
 		multMatVet(A, v, par.n, z);
 
@@ -277,45 +325,51 @@ int gradienteConjugado(double *A, double *B, parametro par){
 			r[i] = r[i] - s*z[i];  //calculo do residuo
 
 		//y = M-¹ * r
-		for(i = 0; i < par.n; i++)
-		y[i] = r[i] / M[i*par.n + i];
+		if(par.p < 1){
+			for(i = 0; i < par.n; i++){
+				y[i] = r[i] / M[i*par.n + i];
+			}
+		}else{
+			double soma = 0.0;
+			y[0] = r[0] / M[0*par.n + 0];
+			for(i = 1; i < par.n; i++){
+				soma = r[i];
+				for(j = i - 1; j >= 0; j--){
+					soma = soma - M[i*par.n + j]*y[j];
+				}
+				y[i] = soma / M[i*par.n + i];
+			}
+		}
 
 		//aux1 = r^t * r
 		aux1 = multVetVet(r, r, par.n);
 
-		//calculo do maior elemento do vetor X e do vetor X anterior
-
-		erroAproximado = fabs((maxVetor(X, par.n) - maxVetor(Xant, par.n)) / maxVetor(X, par.n)); //erro aproximado absoluto
-
-		//ESSA PARTE AQUI
-
-		//calculo do residuo -> residuo = B - A*X
-		/*multMatVet(A, X, par.n, residuo); //residuo = A*X
-		for(i = 0; i < par.n; i++){ //residuo = B - residuo 
-			residuo[i] = B[i] - residuo[i];
-		}*/
+		//erro aproximado absoluto
+		for(i = 0; i < par.n; i++){
+			erroAproximadoA[i] = fabs(X[i] - Xant[i]); 
+			erroAproximadoR[i] = erroAproximadoA[i] / X[i];
+		}
+		erroIt[it] = maxVetor(erroAproximadoA, par.n);
 
 		//for(i = 0; i < par.n; i++)
 		//	printf("%lf\n", residuo[i]);
 
-		norma[it] = sqrtf(multVetVet(r, r, par.n)); //norma euclidiana do residuo
-
-
-		//ATE AQUI
+		norma = sqrtf(multVetVet(r, r, par.n)); //norma euclidiana do residuo
 
 		//printf("%lf\n", erroAproximado);
 
-		if(erroAproximado < par.e && !convergiu){
+		if(maxVetor(erroAproximadoR, par.n) < par.e && !convergiu){
 			//achou resultado
-			//encerra();
-			for(i = 0; i < par.n; i++)
+			imprime_dados(erroIt, X, norma, t_pc.dif, t_it.dif, t_r.dif, par, it);
+			/*for(i = 0; i < par.n; i++)
 				printf("%lf ", X[i]);
-			printf("\n ");
+			printf("\n ");*/
 			printf("%d ", it);
 			printf("\n ");
-			if (par.op == 0) //se falso, para as iterações
+			if (par.op == 0){ //se falso, para as iterações
+				liberaVet(M, X, Xant, r, v, z, y, T, erroAproximadoR , erroAproximadoA, erroIt);
 				return 0;
-			else
+			}else 
 				convergiu = 1;
 		}
 		//aux1 = y^t * r;
@@ -330,8 +384,13 @@ int gradienteConjugado(double *A, double *B, parametro par){
 		//v = y + m*v
 		for(i = 0; i < par.n; i++)
 			v[i] = y[i] + m*v[i];
+
+	t_it.fim = timestamp();
+	t_it.dif = t_it.fim - t_it.ini;
 	}
 	if (!convergiu)
 		fprintf(stderr, "O método não convergiu!\n");
+
+	liberaVet(M, X, Xant, r, v, z, y, T, erroAproximadoR , erroAproximadoA, erroIt);
 	return -1;
 }

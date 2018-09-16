@@ -1,6 +1,6 @@
     CC     = gcc -std=c11 -g
     CFLAGS = 
-    LFLAGS = -lm
+    LFLAGS = -lm -Wall
 
       PROG = cgSolver
       OBJS = utils.o \

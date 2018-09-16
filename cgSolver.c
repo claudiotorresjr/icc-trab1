@@ -39,7 +39,7 @@ void opcoes(int argc, char *argv[], parametro *par){
 					fprintf(stderr, "-n precisa de um parametro numerico.\n");
 					exit(-1);
 				}
-				if(par->n <= 10){
+				if(par->n < 10){
 					fprintf(stderr, "n precisa ser > 10.\n");
 					exit(-1);
 				}
@@ -64,7 +64,7 @@ void opcoes(int argc, char *argv[], parametro *par){
 					exit(-1);
 				}
 				if(par->p >= 0.0 && par->p > 2.0){
-					fprintf(stderr, "p precisa estar: 0 <= p <= 2.\n");
+					fprintf(stderr, "p precisa estar: 0.0 <= p < 2.0\n");
 					exit(-1);
 				}
 				break;
@@ -115,6 +115,8 @@ int main (int argc, char *argv[])
 	
 	opcoes(argc, argv, &par);
 
+	//printf("%s\n", par.o);
+
 	A = (double*)malloc(par.n*par.n*sizeof(double));
 	B = (double*)malloc(par.n*sizeof(double));
 
@@ -153,5 +155,7 @@ int main (int argc, char *argv[])
 		printf("= %2lf", B[i]);
 		printf("\n");
 	}*/
+	free(A);
+	free(B);
 }
 

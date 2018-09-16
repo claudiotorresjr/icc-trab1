@@ -104,7 +104,7 @@ void opcoes(int argc, char *argv[], parametro *par){
 
 int main (int argc, char *argv[])
 {
-	double *A, *B, *X;
+	double *A, *B;
 	long int i, j;
 	parametro par;
 	srand(20182);
@@ -142,10 +142,7 @@ int main (int argc, char *argv[])
 		printf("\n");
 	}*/
 
-	trasformaSistema(A, B, par.n);
-
 	gradienteConjugado(A, B, par);
-
 
 	/*printf("\n");
 	for(i = 0; i < par.n; i++){

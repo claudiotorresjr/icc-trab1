@@ -265,6 +265,9 @@ int gradienteConjugado(double *A, double *B, parametro par){
 	tempo t_r; //struct para usar o timestamp residuo
 
 	t_pc.ini = timestamp();
+	//transforma A em uma matriz positiva simetrica
+	trasformaSistema(A, B, par.n);
+	//acha pre-condicionador
 	preCondicionador(par.p, M, A, par.n);
 	t_pc.fim = timestamp();
 	t_pc.dif = t_pc.fim - t_pc.ini;
@@ -324,6 +327,7 @@ int gradienteConjugado(double *A, double *B, parametro par){
 		for(i = 0; i < par.n; i++)
 			r[i] = r[i] - s*z[i];  //calculo do residuo
 
+
 		//y = M-¹ * r
 		if(par.p < 1){
 			for(i = 0; i < par.n; i++){
@@ -354,12 +358,16 @@ int gradienteConjugado(double *A, double *B, parametro par){
 		//for(i = 0; i < par.n; i++)
 		//	printf("%lf\n", residuo[i]);
 
-		norma = sqrtf(multVetVet(r, r, par.n)); //norma euclidiana do residuo
-
 		//printf("%lf\n", erroAproximado);
 
 		if(maxVetor(erroAproximadoR, par.n) < par.e && !convergiu){
 			//achou resultado
+			t_r.ini = timestamp();
+			//calcula a norma
+			norma = sqrtf(multVetVet(r, r, par.n)); //norma euclidiana do residuo
+			t_r.fim = timestamp();
+			t_r.dif = t_r.fim - t_r.ini;
+			//imprime dados no arquivo
 			imprime_dados(erroIt, X, norma, t_pc.dif, t_it.dif, t_r.dif, par, it);
 			/*for(i = 0; i < par.n; i++)
 				printf("%lf ", X[i]);

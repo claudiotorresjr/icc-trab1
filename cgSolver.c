@@ -115,7 +115,7 @@ void opcoes(int argc, char *argv[], parametro *par){
 				break;
 			case 'e':
 				if(strcmp(optarg, "-o") == 0){
-					par->e = 0.00001;
+					par->e = EPS;
 					par->op = 1;
 					par->o = argv[optind];
 				}

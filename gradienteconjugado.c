@@ -11,7 +11,7 @@
 #include "utils.h"
 
 /**
- * @brief Função que transforma um sistema em um sistema 
+ * @brief Função que multiplica duas matrizes
  * @param pri Primeiro parametro: Matriz
  * @param sec Segundo parametro: Matriz
  * @param mult Resultado da multiplicação
@@ -34,7 +34,7 @@ void multMatMat(double *pri, double *sec, long int tam, double *mult){
 }
 
 /**
- * @brief Função que transforma um sistema em um sistema 
+ * @brief Função que multiplica uma matriz por um vetor
  * @param pri Primeiro parametro: Matriz
  * @param sec Segundo parametro: Vetor
  * @param mult Resultado da multiplicação
@@ -57,14 +57,14 @@ void multMatVet(double *pri, double *sec, long int tam, double *mult){
 }
 
 /**
- * @brief Função que transforma um sistema em um sistema 
+ * @brief Função que multiplica dois vetores
  * @param pri Primeiro parametro: Vetor
  * @param sec Segundo parametro: Vetor
  * @param tam Ordem da Matriz
 */
 
 double multVetVet(double *pri, double *sec, long int tam){
-	long int i, j;
+	long int i;
 	double soma = 0.0;
 
 	for (i = 0; i < tam; i++){
@@ -74,7 +74,7 @@ double multVetVet(double *pri, double *sec, long int tam){
 }
 
 /**
- * @brief Função que transforma um sistema em um sistema 
+ * @brief Função que transforma um sistema em um sistema simetrico e positivo definido
  * @param A matriz original
  * @param B vetor de termos independentes
  * @param tam Ordem da Matriz
@@ -323,6 +323,11 @@ void criaMatrizes(double *A, double *L, double *U, double *D, long int tam)
  * @param r Resíduo
  * @param v M^(-1)*B
  * @param z Resultado para a matriz verdadeira * vetor resposta de M
+ * @param y vetor soluçao para o sistema M*y = r
+ * @param T matriz transposta
+ * @param erroAproximadoR vetor para o erro aproximado relativo
+ * @param erroAproximadoA vetor para o erro aproximado absoluto
+ * @param erroIt vetor para o erro maximo de cada iteração
 */
 
 void liberaVet(double *M, double *X, double *Xant, double *r, double *v, double *z, 
@@ -343,7 +348,7 @@ void liberaVet(double *M, double *X, double *Xant, double *r, double *v, double 
 
 /**
  * @brief Função que calcula a solução do sistema linear pelo método do Gradiente Conjugado
- * @param A Matriz condicionada
+ * @param A Matriz do sistema 
  * @param b Vetor solução
  * @param par Struct contendo os parametros passados durante a chamada do programa
 */

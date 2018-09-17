@@ -3,8 +3,8 @@
 # -----------------------------------------------------------------------------
 
     CC     = gcc -std=c11 -g
-    CFLAGS = 
-    LFLAGS = -lm -Wall
+    CFLAGS = -Wall
+    LFLAGS = -lm 
 
       PROG = cgSolver
       OBJS = utils.o \

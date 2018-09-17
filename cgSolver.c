@@ -73,10 +73,10 @@ void opcoes(int argc, char *argv[], parametro *par){
 				if(isdigit(*argv[optind - 1]))
 					par->n = atoi(optarg);
 				else{
-					fprintf(stderr, "-n precisa de um parametro numerico.\n");
+					fprintf(stderr, "-n precisa de um parametro numerico positivo.\n");
 					exit(-1);
 				}
-				if(par->n < 10){
+				if(par->n <= 10){
 					fprintf(stderr, "n precisa ser > 10.\n");
 					exit(-1);
 				}
@@ -85,7 +85,7 @@ void opcoes(int argc, char *argv[], parametro *par){
 				if(isdigit(*argv[optind - 1]))
 					par->k = atoi(optarg);
 				else{
-					fprintf(stderr, "-k precisa de um valor associado numerico.\n");
+					fprintf(stderr, "-k precisa de um valor associado numerico positivo.\n");
 					exit(-1);
 				}
 				if( (par->k > par->n) || (par->k <= 1) || ((par->k % 2) == 0) ){
@@ -97,10 +97,10 @@ void opcoes(int argc, char *argv[], parametro *par){
 				if(isdigit(*argv[optind - 1]))
 					par->p = atof(optarg);
 				else{
-					fprintf(stderr, "-p precisa de um valor associado numerico.\n");
+					fprintf(stderr, "-p precisa de um valor associado numerico positivo.\n");
 					exit(-1);
 				}
-				if(par->p >= 0.0 && par->p > 2.0){
+				if(par->p < 0.0 || par->p >= 2.0){
 					fprintf(stderr, "p precisa estar: 0.0 <= p < 2.0\n");
 					exit(-1);
 				}
@@ -109,7 +109,7 @@ void opcoes(int argc, char *argv[], parametro *par){
 				if(isdigit(*argv[optind - 1]))
 					par->i = atoi(optarg);
 				else{
-					fprintf(stderr, "-i precisa de um valor associado numerico.\n");
+					fprintf(stderr, "-i precisa de um valor associado numerico positivo.\n");
 					exit(-1);
 				}
 				break;
@@ -123,7 +123,7 @@ void opcoes(int argc, char *argv[], parametro *par){
 					par->e = atof(optarg);
 					par->op = 0;
 					if (par->e <= 0.0){
-						fprintf(stderr, "-o precisa de um valor positivo.\n");
+						fprintf(stderr, "-e precisa de um valor positivo.\n");
 						exit(-1);
 					}
 				}

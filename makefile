@@ -12,7 +12,7 @@
              gradienteconjugado.o \
              $(PROG).o
 
-.PHONY: doc purge clean
+.PHONY: doc purge clean all
 
 %.o: %.c %.h utils.h
 	$(CC) -c $(CFLAGS) $<
@@ -36,5 +36,5 @@ clean:
 	rm -rf *~ *.bak 
 
 purge: clean
-	rm -rf html latex
+	rm -rf html
 	rm -f *.o $(PROG)

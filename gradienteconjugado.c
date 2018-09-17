@@ -349,7 +349,7 @@ void liberaVet(double *M, double *X, double *Xant, double *r, double *v, double 
 /**
  * @brief Função que calcula a solução do sistema linear pelo método do Gradiente Conjugado
  * @param A Matriz do sistema 
- * @param b Vetor solução
+ * @param B Vetor solução
  * @param par Struct contendo os parametros passados durante a chamada do programa
 */
 

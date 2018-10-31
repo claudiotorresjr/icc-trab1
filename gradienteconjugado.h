@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <string.h> /* memset */
 
 // Parâmetros para teste de convergência
 
@@ -43,15 +44,15 @@ typedef struct tempo{
 	double dif;
 }tempo;
 
-void multMatMat(double *pri, double *sec, long int tam, double *mult);
-void multMatVet(double *pri, double *sec, long int tam, double *mult);
-double multVetVet(double *pri, double *sec, long int tam);
-void trasformaSistema(double *A, double *B, long int tam);
-void transposta(double *A, double *T, long int tam);
-void preCondicionador(double p, double *M, double *A, long int tam);
+void multMatMat(double *pri, double *sec, long int dgn, long int tam, double *mult);
+void multMatVet(double *pri, double *sec, long int inicio, long int dgn, long int tam, double *mult);
+double multVetVet(double *pri, double *sec, long int dgn, long int tam);
+void trasformaSistema(double *A, double *B, double *Atf, double *Btf, parametro par);
+void transposta(double *A, double *T, parametro par);
+void preCondicionador(double *M, double *A, parametro par);
 int gradienteConjugado(double *A, double *B, parametro par);
 void criaMatrizes(double *A, double *L, double *U, double *D, long int tam);
-double maxVetor(double *V, long int tam);
+double maxVetor(double *V, parametro par);
 void Cholesky(double *M, long int tam);
-void liberaVet(double *M, double *X, double *Xant, double *r, double *v, double *z, 
-	double *y, double *T, double *erroAproximadoR , double *erroAproximadoA, double *erroIt);
+void liberaVet(double *M, double *X, double *r, double *v, double *z, 
+	double *y, double *Xant, double *erroAproximadoA, double *erroIt);

@@ -18,17 +18,46 @@
  * @param tam Ordem da Matriz
 */
 
-void multMatMat(double *pri, double *sec, long int tam, double *mult){
+void multMatMat(double *pri, double *sec, long int dgn, long int tam, double *mult){
 	long int i, j, k;
 	double soma = 0.0;
 
-	for (i = 0; i < tam; i++){
-		for (j = 0; j < tam; j++){
-			for (k = 0; k < tam; k++){
-				soma = soma + pri[i*tam + k]*sec[k*tam + j];
+	long int numZerosJ = dgn/2;	
+	long int col = dgn - dgn/2;
+	long int cJ = 0;
+
+	long int cK = 0;
+	long int numZerosK = dgn/2;	
+	long int colK;
+	//long int c;
+
+	for(i = 0; i < tam; ++i){
+		numZerosK = dgn/2;
+		colK = dgn - dgn/2;
+		//if(cK > cJ){
+		//	cK = cJ;
+		//}
+		for(j = 0; j < tam; ++j){
+			for(k = cK; (k < col) && (k < colK); ++k){
+				soma = soma + pri[i*dgn + (dgn/2 - i) + k]*sec[k*dgn + (dgn/2 - k) + j];
 			}
-			mult[i*tam + j] = soma;
+			mult[i*(dgn*2 - 1) + ((dgn*2 - 1)/2 - i) + j] = soma;
 			soma = 0.0;
+			colK++;
+			numZerosK--;
+			if(numZerosK < 0){
+				if(abs(numZerosK) > abs(numZerosJ)){
+					cK = abs(numZerosK);
+				}
+			}
+		}
+		col++;
+		numZerosJ--;
+		if(numZerosJ < 0){
+			cJ++;
+			cK = cJ;
+		}else{
+			cK = 0;
 		}
 	}
 }
@@ -41,17 +70,22 @@ void multMatMat(double *pri, double *sec, long int tam, double *mult){
  * @param tam Ordem da Matriz
 */
 
-void multMatVet(double *pri, double *sec, long int tam, double *mult){
-	long int i, j, k;
+void multMatVet(double *pri, double *sec, long int inicio, long int dgn, long int tam, double *mult){
+	long int i, j, c = 0;
+	long int numZeros = dgn/2;
+	long int col = dgn - dgn/2;	
 	double soma = 0.0;
 
-	for (i = 0; i < tam; i++){
-		for (j = 0; j < tam; j++){
-			for (k = 0; k < tam; k++){
-				soma = soma + pri[i*tam + k]*sec[k];
-			}
-			mult[i] = soma;
-			soma = 0.0;
+	for(i = 0; i < tam; i++){
+		for(j = c; (j < col) && (j < tam); j++){
+			soma = soma + pri[i*dgn + (dgn/2 - i) + j]*sec[inicio + j];
+		}
+		mult[inicio + i] = soma;
+		soma = 0.0;
+		col++;
+		numZeros--;
+		if(numZeros < 0){
+			c++;
 		}
 	}
 }
@@ -63,11 +97,12 @@ void multMatVet(double *pri, double *sec, long int tam, double *mult){
  * @param tam Ordem da Matriz
 */
 
-double multVetVet(double *pri, double *sec, long int tam){
+double multVetVet(double *pri, double *sec, long int dgn, long int tam){
 	long int i;
 	double soma = 0.0;
+	long int numZeros = dgn/2;
 
-	for (i = 0; i < tam; i++){
+	for (i = 0; i < (tam + numZeros); i++){
 		soma = soma + pri[i]*sec[i];
 	}
 	return soma;
@@ -80,25 +115,18 @@ double multVetVet(double *pri, double *sec, long int tam){
  * @param tam Ordem da Matriz
 */
 
-void trasformaSistema(double *A, double *B, long int tam){
-	double *T = (double*)malloc(tam*tam*sizeof(double));
-	double *mult = (double*)malloc(tam*tam*sizeof(double));
-	double *multv = (double*)malloc(tam*sizeof(double));
+void trasformaSistema(double *A, double *B, double *Atf, double *Btf, parametro par){
+	long int tam = par.n*par.k;
 
-	long int i, j;
+	double *T = (double*)malloc(tam*sizeof(double));
 
-	transposta(A, T, tam);
-	multMatMat(T, A, tam, mult);
-	multMatVet(T, B, tam, multv);
-	for(i = 0; i < tam; i++){
-		for(j = 0; j < tam; j++){
-			A[i*tam + j] = mult[i*tam + j];
-			B[i] = multv[i];
-		}
-	}
+	memset(T, 0, sizeof(*T));
+
+	transposta(A, T, par);
+	multMatMat(T, A, par.k, par.n, Atf);
+	multMatVet(T, B, par.k/2, par.k, par.n, Btf);
+
 	free(T);
-	free(mult);
-	free(multv);
 }
 
 /**
@@ -108,12 +136,20 @@ void trasformaSistema(double *A, double *B, long int tam){
  * @param tam Ordem da Matriz
 */
 
-void transposta(double *A, double *T, long int tam){
+void transposta(double *A, double *T, parametro par){
 	long int i, j;
+	long int numZeros = par.k/2;
+	long int col = par.k - par.k/2;
+	long int c = 0;
 
-	for(i = 0; i < tam; i++){
-		for(j = 0; j < tam; j++){
-			T[j*tam + i] = A[i*tam + j];
+	for(i = 0; i < par.n; i++){
+		for(j = c; (j < col) && (j < par.n); j++){
+			T[j*par.k + (par.k/2 - j) + i] = A[i*par.k + (par.k/2 - i) + j];
+		}
+		col++;
+		numZeros--;
+		if(numZeros < 0){
+			c++;
 		}
 	}
 }
@@ -126,7 +162,7 @@ void transposta(double *A, double *T, long int tam){
  * @param tam Ordem da Matriz
 */
 
-void preCondicionador(double p, double *M, double *A, long int tam){
+/*void preCondicionador(double p, double *M, double *A, long int tam){
 	long int i, j;
 	double *L = (double*)malloc(tam*tam*sizeof(double)); //matriz lower
 	double *U = (double*)malloc(tam*tam*sizeof(double)); //matriz upper
@@ -183,7 +219,7 @@ void preCondicionador(double p, double *M, double *A, long int tam){
 	free(D);
 	free(R1);
 	free(R2);
-}
+}*/
 
 /**
  * @brief Função que encontra o maior valor de um vetor
@@ -192,10 +228,12 @@ void preCondicionador(double p, double *M, double *A, long int tam){
  * @return Retorna o maior valor
 */
 
-double maxVetor(double *V, long int tam)
-{
+double maxVetor(double *V, parametro par)
+{	
+	long int i;
+	long int numZeros = par.k/2;
 	double maximo = V[0];
-	for (int i = 0; i < tam; i++)
+	for (i = 0; i < (par.n + numZeros); ++i)
 	{
 		if (V[i] > maximo)
 			maximo = V[i];
@@ -217,6 +255,7 @@ double maxVetor(double *V, long int tam)
 
 void imprime_dados(double *erroIt, double *X, double norma, double pc, double it, double r, parametro par, long int iter)
 {	
+	long int numZeros = par.k/2;
 	FILE *arqOut;
 	arqOut = fopen(par.o, "w");
 	if(arqOut == NULL){
@@ -233,7 +272,7 @@ void imprime_dados(double *erroIt, double *X, double norma, double pc, double it
 	fprintf(arqOut, "# Tempo PC: <%lf>\n", pc); //# Tempo PC: <tempo para cálculo do pré-condicionador>
 	fprintf(arqOut, "# Tempo iter: <%lf>\n", it); //# Tempo iter: <tempo para resolver uma iteração do método>
 	fprintf(arqOut, "# Tempo residuo: <%lf>\n#\n%ld\n", r, par.n); //# Tempo residuo: <tempo para calcular o residuo do SL> 
-	for(long int i = 0; i < par.n; i++){
+	for(long int i = par.k/2; i < (par.n + numZeros); i++){
 		fprintf(arqOut, "%.15g ", X[i]); //x_1 x_12 ... x_n
 	}
 	fprintf(arqOut, "\n");
@@ -245,7 +284,7 @@ void imprime_dados(double *erroIt, double *X, double norma, double pc, double it
  * @param tam Ordem da Matriz
 */
 
-void Cholesky(double *M, long int tam)
+/*void Cholesky(double *M, long int tam)
 {	
 	long int i, j, k;
 	
@@ -269,7 +308,7 @@ void Cholesky(double *M, long int tam)
 			M[i*tam + j] = 0.0;
 		}
 	}	
-}
+}*/
 
 /**
  * @brief Função que aloca e atribui as matrizes criadas para os pré condionantes Gauss Seidel e SSOR
@@ -280,7 +319,7 @@ void Cholesky(double *M, long int tam)
  * @param tam Ordem da Matriz
 */
 
-void criaMatrizes(double *A, double *L, double *U, double *D, long int tam)
+/*void criaMatrizes(double *A, double *L, double *U, double *D, long int tam)
 {
 	long int i, j;
 	//cria a matriz upper
@@ -291,21 +330,13 @@ void criaMatrizes(double *A, double *L, double *U, double *D, long int tam)
 				}else{
 					U[i*tam + j] = 0.0;
 				}
-			}
-		}
-		//cria a matriz lower
-		for(i = 0; i < tam; i++){
-			for(j = 0; j < tam; j++){
+
 				if(j < i){
 					L[i*tam + j] = A[i*tam + j];
 				}else{
 					L[i*tam + j] = 0.0;
 				}
-			}
-		}
-		//cria a matriz diagonal
-		for(i = 0; i < tam; i++){
-			for(j = 0; j < tam; j++){
+
 				if(j == i){
 					D[i*tam + j] = A[i*tam + j];
 				}else{
@@ -313,7 +344,7 @@ void criaMatrizes(double *A, double *L, double *U, double *D, long int tam)
 				}
 			}
 		}
-}
+}*/
 
 /**
  * @brief Função que libera os vetores criados durante a execução do programa
@@ -330,20 +361,27 @@ void criaMatrizes(double *A, double *L, double *U, double *D, long int tam)
  * @param erroIt vetor para o erro maximo de cada iteração
 */
 
-void liberaVet(double *M, double *X, double *Xant, double *r, double *v, double *z, 
-	double *y, double *T, double *erroAproximadoR , double *erroAproximadoA, double *erroIt){
+void liberaVet(double *M, double *X, double *r, double *v, double *z, 
+	double *y, double *Xant, double *erroAproximadoA, double *erroIt){
 
 	free(M);
+	printf("M\n");
 	free(X);
-	free(Xant);
+	printf("X\n");
 	free(r);
+	printf("r\n");
 	free(v);
+	printf("v\n");
 	free(z);
+	printf("z\n");
 	free(y);
-	free(T);
-	free(erroAproximadoR);
+	printf("y\n");
+	free(Xant);
+	printf("Xant\n");
 	free(erroAproximadoA);
+	printf("erroAproximadoA\n");
 	free(erroIt);
+	printf("erroIt\n");
 }
 
 /**
@@ -355,21 +393,27 @@ void liberaVet(double *M, double *X, double *Xant, double *r, double *v, double 
 
 int gradienteConjugado(double *A, double *B, parametro par){
 	int convergiu = 0;
-	double *M = (double*)malloc(par.n*par.n*sizeof(double)); //pre-condicionador
-	double *X = (double*)malloc(par.n*sizeof(double)); 		//vetor de 'chutes' iniciais
-	double *Xant = (double*)malloc(par.n*sizeof(double));
-	double *r = (double*)malloc(par.n*sizeof(double));		//residuo
-	double *v = (double*)malloc(par.n*sizeof(double));		
-	double *z = (double*)malloc(par.n*sizeof(double));		
-	double *y = (double*)malloc(par.n*sizeof(double));	
-	double *T = (double*)malloc(par.n*sizeof(double));		//usado para calcular as transpostas
-	double *erroAproximadoR = malloc(par.n*sizeof(double));           //vetor com o erro relativo
-	double *erroAproximadoA = malloc(par.n*sizeof(double));	//vetor com o erro absoluto
+	long int numZeros = par.k/2;
+
+	double *M = (double*)malloc((par.n + numZeros)*sizeof(double)); //pre-condicionador
+	double *X = (double*)malloc((par.n + numZeros)*sizeof(double)); 		//vetor de 'chutes' iniciais
+	double *Xant = (double*)malloc((par.n + numZeros)*sizeof(double));
+	double *r = (double*)malloc((par.n + numZeros)*sizeof(double));		//residuo
+	double *v = (double*)malloc((par.n + numZeros)*sizeof(double));		
+	double *z = (double*)malloc((par.n + numZeros)*sizeof(double));		
+	double *y = (double*)malloc((par.n + numZeros)*sizeof(double));	
+	////double *erroAproximadoR = malloc(par.n*sizeof(double));           //vetor com o erro relativo
+	double *erroAproximadoA = malloc((par.n + numZeros)*sizeof(double));	//vetor com o erro absoluto
 	double *erroIt = malloc(par.i*sizeof(double));	//vetor com o erro max absoluto em cada iteraçao
+	double *Atf = (double*)malloc((par.k*2 - 1)*par.n*sizeof(double)); 
+	double *Btf = (double*)malloc((par.n + numZeros)*sizeof(double)); 		
 
-	double s, aux, aux1, m, norma;
+	double s, aux, aux1, m, norma; //Xprox;
 
-	long int i, j;
+	long int i, j, it;
+
+	memset(Atf, 0, sizeof(*Atf));
+	memset(M, 0, sizeof(*M));
 
 	tempo t_pc; //struct para usar o timestamp precodicionador
 	tempo t_it; //struct para usar o timestamp cada iteraçao
@@ -377,32 +421,35 @@ int gradienteConjugado(double *A, double *B, parametro par){
 
 	t_pc.ini = timestamp();
 	//transforma A em uma matriz positiva simetrica
-	trasformaSistema(A, B, par.n);
+	trasformaSistema(A, B, Atf, Btf, par);
 	//acha pre-condicionador
-	preCondicionador(par.p, M, A, par.n);
+	//preCondicionador(par.p, M, Atf, par.n);
+	for(i = 0; i < (par.n + numZeros); ++i){
+		M[i + par.k/2] = Atf[i*(par.k*2 - 1) + ((par.k*2 - 1)/2 - i) + i];
+	}
+
 	t_pc.fim = timestamp();
 	t_pc.dif = t_pc.fim - t_pc.ini;
 
-	//X0 = 0
-	for(i = 0; i < par.n; i++)
-		X[i] = 0;
-
-	//r = B
-	for(i = 0; i < par.n; i++)
-		r[i] = B[i];
+	
+	for(i = 0; i < (par.n + numZeros); ++i){
+		X[i] = 0; //X0 = 0
+		r[i] = B[i]; //r = B
+	}
+		
 
 	if(par.p < 1){
-		//v = M-¹ * B e y = M-¹ * r pois r == B
-		for(i = 0; i < par.n; i++){
-			v[i] = B[i] / M[i*par.n + i];
+//		//v = M-¹ * B e y = M-¹ * r pois r == B
+		for(i = par.k/2; i < (par.n + numZeros); ++i){
+			v[i] = Btf[i] / M[i];
 			y[i] = v[i];
 		}
 	}else{
 		double soma = 0.0;
-		v[0] = B[0] / M[0*par.n + 0];
+		v[0] = Btf[0] / M[0*par.n + 0];
 		y[0] = v[0];
 		for(i = 1; i < par.n; i++){
-			soma = B[i];
+			soma = Btf[i];
 			for(j = i - 1; j >= 0; j--){
 				soma = soma - M[i*par.n + j]*v[j];
 			}
@@ -411,38 +458,52 @@ int gradienteConjugado(double *A, double *B, parametro par){
 		}
 	}
 
+//	//aux = y^t * r
+	aux = multVetVet(y, r, par.k, par.n);
 
-
-	//aux = y^t * r
-	aux = multVetVet(y, r, par.n);
-
-	//it == 1 pois a it 0 foi feito fora do for
-	for(int it = 1; it < par.i; it++){
+//	//it == 1 pois a it 0 foi feito fora do for
+	for(it = 1; it < par.i; it++){
 		t_it.ini = timestamp();
 
-		//z = A*v
-		multMatVet(A, v, par.n, z);
+//		//z = A*v
+		multMatVet(Atf, v, par.k/2, (par.k*2 - 1), par.n, z);
 
-		//s = aux /v^t * z
-		s = aux/multVetVet(v, z, par.n);
+		//numZeros = (par.k*2 - 1)/2;
+		//long int col = (par.k*2 - 1) - (par.k*2 - 1)/2;
+		//long int c = 0;
+		//for(i = 0; i < par.n; ++i){
+		//	for(j = c; (j < col) && (j < par.n); ++j){
+		//		printf("%lf ", Atf[i*(par.k*2 - 1) + ((par.k*2 - 1)/2 - i) + j]);
+		//	}
+		//	col++;
+		//	numZeros--;
+		//	if(numZeros < 0){
+		//		c++;
+		//	}
+		//	printf("\n");
+		//}
+//		//s = aux /v^t * z
+		s = aux/multVetVet(v, z, par.k, par.n);
 
-		//salva o vetor
-		for(i = 0; i < par.n; i++)
+//		//salva o vetor
+		for(i = 0; i < (par.n + numZeros); ++i)
 			Xant[i] = X[i];
 
-		//x = x + s*v
-		for(i = 0; i < par.n; i++)
+//		//x = x + s*v
+		for(i = 0; i < (par.n + numZeros); ++i){
 			X[i] = X[i] + s*v[i];
-
-		//r = r - s*z
-		for(i = 0; i < par.n; i++)
+		}
+//
+//		//r = r - s*z
+		for(i = 0; i < (par.n + numZeros); ++i){
 			r[i] = r[i] - s*z[i];  //calculo do residuo
+		}
 
 
-		//y = M-¹ * r
+//		//y = M-¹ * r
 		if(par.p < 1){
-			for(i = 0; i < par.n; i++){
-				y[i] = r[i] / M[i*par.n + i];
+			for(i = par.k/2; i < (par.n + numZeros); ++i){
+				y[i] = r[i] / M[i];
 			}
 		}else{
 			double soma = 0.0;
@@ -456,58 +517,63 @@ int gradienteConjugado(double *A, double *B, parametro par){
 			}
 		}
 
-		//aux1 = r^t * r
-		//aux1 = multVetVet(r, r, par.n);
+//		//aux1 = r^t * r
+//		//aux1 = multVetVet(r, r, par.n);
 
-		//erro aproximado absoluto
-		for(i = 0; i < par.n; i++){
+//		//erro aproximado absoluto
+		for(i = 0; i < (par.n + numZeros); ++i){
 			erroAproximadoA[i] = fabs(X[i] - Xant[i]); 
-			erroAproximadoR[i] = erroAproximadoA[i] / X[i];
+//		//	erroAproximadoR[i] = erroAproximadoA[i] / X[i];
 		}
-		erroIt[it] = maxVetor(erroAproximadoA, par.n);
+		erroIt[it] = maxVetor(erroAproximadoA, par);
 
 		//for(i = 0; i < par.n; i++)
 		//	printf("%lf\n", residuo[i]);
 
-		//printf("%lf\n", erroAproximado);
+//		//printf("%lf\n", erroAproximado);
 
-		if(maxVetor(erroAproximadoR, par.n) < par.e && !convergiu){
-			//achou resultado
+		if(maxVetor(erroAproximadoA, par) < par.e && !convergiu){
+//			//achou resultado
 			t_r.ini = timestamp();
-			//calcula a norma
-			norma = sqrtf(multVetVet(r, r, par.n)); //norma euclidiana do residuo
+//			//calcula a norma
+			norma = sqrtf(multVetVet(r, r, par.k, par.n)); //norma euclidiana do residuo
 			t_r.fim = timestamp();
 			t_r.dif = t_r.fim - t_r.ini;
-			//imprime dados no arquivo
+//			//imprime dados no arquivo
 			imprime_dados(erroIt, X, norma, t_pc.dif, t_it.dif, t_r.dif, par, it);
 			/*for(i = 0; i < par.n; i++)
 				printf("%lf ", X[i]);
 			printf("\n ");*/
 			if (par.op == 0){ //se falso, para as iterações
-				liberaVet(M, X, Xant, r, v, z, y, T, erroAproximadoR , erroAproximadoA, erroIt);
+				//liberaVet(M, X, r, v, z, y, Xant, erroAproximadoA, erroIt); 
 				return 0;
-			}else 
+			}else{
 				convergiu = 1;
+			}
 		}
-		//aux1 = y^t * r;
-		aux1 = multVetVet(y, r, par.n);
 
-		//m = aux1/aux
+//		//aux1 = y^t * r;
+		aux1 = multVetVet(y, r, par.k, par.n);
+
+//		//m = aux1/aux
 		m = aux1/aux;
 
-		//aux = aux1
+//		//aux = aux1
 		aux = aux1;
 
-		//v = y + m*v
-		for(i = 0; i < par.n; i++)
+//		//v = y + m*v
+		for(i = 0; i < (par.n + numZeros); ++i){
 			v[i] = y[i] + m*v[i];
+		}
 
 	t_it.fim = timestamp();
 	t_it.dif = t_it.fim - t_it.ini;
 	}
-	if (!convergiu)
+	if (!convergiu){
+		imprime_dados(erroIt, X, norma, t_pc.dif, t_it.dif, t_r.dif, par, it);
 		fprintf(stderr, "O método não convergiu!\n");
+	}
 
-	liberaVet(M, X, Xant, r, v, z, y, T, erroAproximadoR , erroAproximadoA, erroIt);
+	//liberaVet(M, X, r, v, z, y, Xant, erroAproximadoA, erroIt); 
 	return -1;
 }

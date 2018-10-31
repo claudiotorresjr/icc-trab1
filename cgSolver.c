@@ -148,9 +148,9 @@ void opcoes(int argc, char *argv[], parametro *par){
 
 int main (int argc, char *argv[])
 {
-	double *A, *B;
-	long int i, j;
+	long int i, j, col, numZeros, c;
 	parametro par;
+
 	srand(20182);
 
 	if(argc != 13 && argc != 12){
@@ -159,43 +159,77 @@ int main (int argc, char *argv[])
 	
 	opcoes(argc, argv, &par);
 
-	//printf("%s\n", par.o);
 
-	A = (double*)malloc(par.n*par.n*sizeof(double));
-	B = (double*)malloc(par.n*sizeof(double));
+	long int tam = par.n*par.k;
+	numZeros = par.k/2;
+	col = par.k - par.k/2;
+	c = 0;
 
-	for(i = 0; i < par.n; i++){
-		for(j = 0; j < par.n; j++){
-			if(abs(i - j) > par.k/2){
-				A[i*par.n + j] = 0;
-			}else{
-				A[i*par.n + j] = generateRandomA(i, j, par.k);
-			}
+
+	double *A = (double*)malloc(tam*sizeof(double));
+	double *B = (double*)malloc((par.n + numZeros)*sizeof(double));
+
+	memset(A, 0, sizeof(*A));
+	memset(B, 0, sizeof(*B));
+
+
+	for(i = 0; i < par.n; ++i){
+		for(j = c; (j < col) && (j < par.n); ++j){
+			A[i*par.k + (par.k/2 - i) + j] = generateRandomA(i, j, par.k);
+		}
+		col++;
+		numZeros--;
+		if(numZeros < 0){
+			c++;
 		}
 	}
 
-	for(i = 0; i < par.n; i++){
+	numZeros = par.k/2;
+	for(i = numZeros; i < (par.n + numZeros); ++i){
 		B[i] = generateRandomB(par.k);
 	}
 
-	/*for(i = 0; i < par.n; i++){
-		for(j = 0; j < par.n; j++){
-			printf("%2lf ", A[i*par.n + j]);
-		}
-		printf("= %2lf", B[i]);
-		printf("\n");
-	}*/
+	//numZeros = par.k/2;
+	//col = par.k - par.k/2;
+	//c = 0;
+	//for(i = 0; i < par.n; ++i){
+	//	for(j = c; (j < col) && (j < par.n); ++j){
+	//		printf("%lf ", A[i*par.k + (par.k/2 - i) + j]);
+	//	}
+	//	col++;
+	//	numZeros--;
+	//	if(numZeros < 0){
+	//		c++;
+	//	}
+	//	printf("\n");
+	//}
+//
+//	//numZeros = par.k/2;
+//	//for(i = 0; i < (par.n + numZeros*2); ++i){
+//	//	printf("%.1lf\n", B[i]);
+	//}
 
 	gradienteConjugado(A, B, par);
 
-	/*printf("\n");
-	for(i = 0; i < par.n; i++){
-		for(j = 0; j < par.n; j++){
-			printf("%2lf ", A[i*par.n + j]);
-		}
-		printf("= %2lf", B[i]);
-		printf("\n");
-	}*/
+	//numZeros = par.k/2;
+	//col = par.k - par.k/2;
+	//c = 0;
+	//for(i = 0; i < par.n; ++i){
+	//	for(j = c; (j < col) && (j < par.n); ++j){
+	//		printf("%lf ", A[i*par.k + (par.k/2 - i) + j]);
+	//	}
+	//	col++;
+	//	numZeros--;
+	//	if(numZeros < 0){
+	//		c++;
+	//	}
+	//	printf("\n");
+	//}
+//
+//	//numZeros = par.k/2;
+//	//for(i = 0; i < (par.n + numZeros*2); ++i){
+//	//	printf("%.1lf\n", B[i]);
+	//}
 	free(A);
 	free(B);
 
